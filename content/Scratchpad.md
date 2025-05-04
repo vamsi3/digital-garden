@@ -1,1 +1,0 @@
-https://www.amazingif.com/
