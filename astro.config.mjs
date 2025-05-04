@@ -10,6 +10,9 @@ export default defineConfig({
   integrations: [
     starlight({
       title: "Vamsi's Digital Garden",
+      editLink: {
+        baseUrl: 'https://github.com/vamsi3/digital-garden/edit/main/',
+      },
       social: [
         {
           icon: "github",

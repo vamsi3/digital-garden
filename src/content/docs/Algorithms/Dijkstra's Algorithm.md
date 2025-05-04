@@ -1,7 +1,6 @@
 ---
-title: "Dijkstra'S Algorithm"
+title: "Dijkstra's Algorithm"
 ---
-
 
 ```cpp
 #include <compare>
@@ -79,4 +78,3 @@ int main() {
     }
 }
 ```
-
