@@ -2,6 +2,6 @@
 title: Ghostty
 ---
 
-#### macOS
+##### macOS
 
 - System Settings → Privacy & Security → App Management → Enable 'Ghostty'
