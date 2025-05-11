@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@astrojs/starlight": "^0.34.3",
+    "@fontsource/commit-mono": "^5.2.5",
     "astro": "^5.7.12",
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0",

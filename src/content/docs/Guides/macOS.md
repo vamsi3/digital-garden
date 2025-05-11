@@ -59,8 +59,3 @@ ping -D -s 1472 www.google.com
 - Nix - using [Determinate NIx Installer](https://determinate.systems/nix-installer/)
 - [Helix](https://helix-editor.com/ - Command Line Editor
 - Ghostty terminal
-
-##### VS Code
-
-###### Keyboard Shortcuts
-- Change to left/right tab ⌘⇧\[ and ⌘⇧\]

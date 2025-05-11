@@ -31,7 +31,10 @@ export default defineConfig({
       pagination: false,
       // Custom CSS to style KaTeX equations.
       customCss: [
-        './src/styles/katex.css'
+        './src/styles/custom.css',
+        './src/styles/katex.css',
+        '@fontsource/commit-mono/400.css',
+        '@fontsource/commit-mono/700.css',
       ],
       // Load KaTeX required CSS.
       head: [
