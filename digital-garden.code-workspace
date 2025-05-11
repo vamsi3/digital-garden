@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"name": "Digital Garden",
+			"path": ".",
+		},
+		{
+			"path": "src/content/docs"
+		}
+	],
+}

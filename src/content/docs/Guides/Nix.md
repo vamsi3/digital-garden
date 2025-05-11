@@ -4,19 +4,13 @@ title: Nix
 
 ##### Installation
 
-###### Install Determinate Nix
+Use Determiniate Nix installer. Source: https://determinate.systems/nix-installer/
 
-Source: https://determinate.systems/nix-installer/
 ```sh
-curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install --determinate
+curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
 ```
 
-###### Enable Flakes and new command line interface
-
-Create `~/.config/nix/nix.conf` and enter
-```
-experimental-features = nix-command flakes
-```
+Respond 'No' when prompted if you want to install 'Determinate' flavor of Nix.
 
 ##### Debugging
 
@@ -27,50 +21,9 @@ You can print any value into shell using something like
 x = lib.debug.traceValFn builtins.attrNames config;
 ```
 
-# <<<<< ARCHIVED>>>>>
-## Global `flake.nix`
+##### Garbage Collection
 
-### macOS
+Once in a while, run [`nix-collect-garbage --delete-old`](https://nix.dev/manual/nix/2.24/command-ref/nix-collect-garbage#description) to run garbage collector.
 
-```nix
-{
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs";
-  };
+Maybe add in a `sudo` if there are `chmod` permission issues to delete unfree apps. I still don't understand why this happens sometimes, and if it is the right way, but you can't know everything ¯\\\_(ツ)\_/¯, and if it works it works (for now).
 
-  outputs = { self, nixpkgs }: {
-    packages."aarch64-darwin".default = let
-      pkgs = import nixpkgs {
-        system = "aarch64-darwin";
-        config = {
-          allowUnfree = true;
-          allowUnfreePredicate = _: true;
-        };
-      };
-    in pkgs.buildEnv {
-      name = "home-packages";
-      paths = with pkgs; [
-        alacritty
-        # android-studio
-        git
-        # github-desktop
-        localsend
-        mos
-        obsidian
-        raycast
-        # ungoogled-chromium
-        utm
-        zed-editor
-      ];
-    };
-  };
-}
-```
-## Steps
-
-1. Create file `~/zen/nix/global/flake.nix`
-2. `nix profile install ~/zen/nix/global/`
-3. `nix profile list` should show the newly installed profile
-4. To upgrade, `nix profile upgrade global`
-5. Open Raycast from `~/.nix-profile/Applications/Raycast.app` and setup
-6. Once in a while, run `nix-store --gc` to run garbage collector

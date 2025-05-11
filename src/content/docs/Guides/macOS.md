@@ -1,22 +1,23 @@
 ---
-title: Macos
+title: macOS
 ---
 
 
 #### Settings
 
-This can potentially improve internet speeds. Try and see!
-
 - Turn off Continuity/AirDrop/Handoff (System Settings > General > AirDrop & Handoff)
 - Turn off Watch Unlock (Settings > Touch ID & Password)
 - Turn off Bluetooth
-- System Settings → Wi-Fi → _Connected Wi-Fi Network_ → Details… →
-	- Low data mode → Disable
-	- Limit IP address tracking → Disable
-	- Proxies → Auto proxy discovery → Disable
-	- Hardware →
-		- Configure → Manually
-		- MTU → Custom 1500
+- System Settings →
+	- Wi-Fi → _Connected Wi-Fi Network_ → Details… →
+		- Low data mode → Disable
+		- Limit IP address tracking → Disable
+		- Proxies → Auto proxy discovery → Disable
+		- Hardware →
+			- Configure → Manually
+			- MTU → Custom 1500
+	- Privacy & Security →
+		- App Management → Enable 'Ghostty'
 
 ##### DNS Servers
 
