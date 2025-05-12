@@ -1,6 +1,12 @@
 @import "@fontsource/commit-mono/400.css";
 @import "@fontsource/commit-mono/700.css";
+@import "@fontsource-variable/noto-sans-telugu";
+
 
 :root {
   --sl-font-mono: "CommitMono", monospace;
+}
+
+:root[lang="te"] {
+  --sl-font-body: "Noto Sans Telugu Variable", sans-serif;
 }

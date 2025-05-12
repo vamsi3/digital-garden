@@ -2,7 +2,7 @@
 
 /** @type {import('@astrojs/starlight/expressive-code').StarlightExpressiveCodeOptions} */
 export default {
-  themes: ['ayu-dark'],
+  // themes: ['ayu-dark'],
   styleOverrides: {
       borderRadius: '0.5rem',
       frames: {
