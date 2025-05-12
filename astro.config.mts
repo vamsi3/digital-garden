@@ -12,14 +12,48 @@ export default defineConfig({
   base: '/digital-garden',
   trailingSlash: 'ignore',
   integrations: [
+    // https://starlight.astro.build/reference/configuration
     starlight({
       title: "Vamsi's Digital Garden",
+      description: "Vamsi's Digital Garden",
       logo: {
         light: './src/assets/logo-light.webp',
         dark: './src/assets/logo-light.webp', // TODO: Fix dark logo and update
       },
+      tableOfContents: {
+        minHeadingLevel: 2,
+        maxHeadingLevel: 6,
+      },
       editLink: {
         baseUrl: 'https://github.com/vamsi3/digital-garden/edit/main/',
+      },
+      sidebar: [
+        {
+          label: 'Clean',
+          autogenerate: { directory: 'clean', collapsed: false },
+        },
+        {
+          label: 'Archive',
+          collapsed: true,
+          autogenerate: { directory: 'archive', collapsed: true },
+        }
+      ],
+      defaultLocale: 'en',
+      locales: {
+        // TODO: Figure out how to set root.
+        // root: {
+        //   label: 'English',
+        //   lang: 'en',
+        // },
+  
+        // English docs in `src/content/docs/en/`
+        en: {
+          label: 'English',
+        },
+        // Telugu docs in `src/content/docs/te/`
+        te: {
+          label: 'తెలుగు'
+        },
       },
       social: [
         {
@@ -28,15 +62,26 @@ export default defineConfig({
           href: "https://github.com/vamsi3",
         },
       ],
-      pagination: false,
-      // Custom CSS to style KaTeX equations.
       customCss: [
         './src/styles/custom.css',
         './src/styles/katex.css',
         '@fontsource/commit-mono/400.css',
         '@fontsource/commit-mono/700.css',
       ],
-      // Load KaTeX required CSS.
+      markdown: {
+        headingLinks: true,
+      },
+      expressiveCode: {
+        themes: ['ayu-dark', 'starlight-light'],
+        useStarlightDarkModeSwitch: true,
+        useStarlightUiThemeColors: true,
+
+        // https://expressive-code.com/reference/configuration
+        // all these options are instead defined in ec.config.mjs
+      },
+      lastUpdated: true,
+      pagination: false,
+      // TODO: Add favicon
       head: [
         {
           tag: 'link',
@@ -48,10 +93,6 @@ export default defineConfig({
           },
         },
       ],
-      "tableOfContents": {
-        minHeadingLevel: 2,
-        maxHeadingLevel: 6,
-      },
     }),
   ],
   markdown: {

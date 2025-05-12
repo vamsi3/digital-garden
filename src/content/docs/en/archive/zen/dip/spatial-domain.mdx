@@ -3,9 +3,10 @@ title: Spatial Domain
 sidebar_label: Spatial Domain
 ---
 
-import assetGammaCorrection from '../../../../assets/dip/gamma-correction.png';
-import assetContrastStretching from '../../../../assets/dip/contrast-stretching.png';
-import assetIntensityLevelSlicing from '../../../../assets/dip/intensity-level-slicing.png';
+import { Image } from 'astro:assets';
+import imageGammaCorrection from '@assets/dip/gamma-correction.png';
+import imageContrastStretching from '@assets/dip/contrast-stretching.png';
+import imageIntensityLevelSlicing from '@assets/dip/intensity-level-slicing.png';
 
 ## Point-Processing Techniques
 
@@ -34,7 +35,7 @@ concat_img = np.hstack((img, log_img)); cv2.imshow('1', concat_img); cv2.waitKey
 
 ### Gamma Correction
 
-<img src={assetGammaCorrection.src} />
+<Image src={imageGammaCorrection} alt="" />
 <div align="right"><em>Image Credits: Book by Gonzalez, Woods</em></div>
 
 ### Piecewise Linear Transformations
@@ -53,12 +54,12 @@ piecewise_linear_transformation = lambda x, r1, s1, r2, s2 : np.piecewise(x, [x 
 piecewise_linear_img = piecewise_linear_transformation(img, img.mean(), 0, img.mean(), 1)
 ```
 
-<img src={assetContrastStretching.src} />
+<Image src={imageContrastStretching} alt="" />
 <div align="right"><em>Image Credits: Book by Gonzalez, Woods</em></div>
 
 #### Intensity-Level Slicing
 
-<img src={assetIntensityLevelSlicing.src} />
+<Image src={imageIntensityLevelSlicing} alt="" />
 <div align="right"><em>Image Credits: Book by Gonzalez, Woods</em></div>
 
 

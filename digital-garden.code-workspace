@@ -5,7 +5,7 @@
 			"path": ".",
 		},
 		{
-			"path": "src/content/docs"
+			"path": "src/content/docs/en/clean"
 		}
 	],
 }
