@@ -8,4 +8,7 @@
 			"path": "src/content/docs/en/clean"
 		}
 	],
+	"settings": {
+		"editor.wordWrap": "on",
+	},
 }
