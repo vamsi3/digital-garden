@@ -1,10 +1,27 @@
-@import "@fontsource/commit-mono/400.css";
-@import "@fontsource/commit-mono/700.css";
-@import "@fontsource-variable/noto-sans-telugu";
+@import '@fontsource/commit-mono/400.css'; /* Regular */
+@import '@fontsource/commit-mono/700.css'; /* Bold */
+@import '@fontsource/lexend/400.css'; /* Regular */
+@import '@fontsource/lexend/700.css'; /* Bold */
 
+/* Source: @fontsource-variable/noto-sans-telugu/standard.css */
+/* noto-sans-telugu-telugu-standard-normal */
+@font-face {
+  font-family: 'Noto Sans Telugu Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  font-stretch: 62.5% 100%;
+  src: url(@fontsource-variable/noto-sans-telugu/files/noto-sans-telugu-telugu-standard-normal.woff2) format('woff2-variations');
+  unicode-range: U+0951-0952,U+0964-0965,U+0C00-0C7F,U+1CDA,U+1CF2,U+200C-200D,U+25CC;
+}
 
 :root {
-  --sl-font-mono: "CommitMono", monospace;
+  --sl-font: 'Lexend', sans-serif;
+  --sl-font-mono: 'CommitMono', monospace;
+}
+
+:root:lang(te) {
+  --sl-font: 'Noto Sans Telugu Variable', 'Lexend', sans-serif;
 }
 
 :root[lang="te"] {

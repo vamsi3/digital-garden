@@ -17,6 +17,9 @@ importers:
       '@fontsource/commit-mono':
         specifier: ^5.2.5
         version: 5.2.5
+      '@fontsource/lexend':
+        specifier: ^5.2.7
+        version: 5.2.7
       astro:
         specifier: ^5.7.12
         version: 5.7.12(@types/node@22.15.17)(rollup@4.40.2)(typescript@5.8.3)
@@ -261,6 +264,9 @@ packages:
 
   '@fontsource/commit-mono@5.2.5':
     resolution: {integrity: sha512-htX8yQWtiPt5L1Hzh4sirvfUJT2+KYiquDB/Q2sY2tWQYplpBUOD5zHnIM3k36Hnm4V+JIIqA/wmwupSQ68WjA==}
+
+  '@fontsource/lexend@5.2.7':
+    resolution: {integrity: sha512-LvhJCaFlpR3/5msAzvIGJqVlvcVIN/Je9niM+pCFUazGeeb0ygOu0TlyAAJCi1TpN3te6tVqnDVMW+1fSFNQ9w==}
 
   '@img/sharp-darwin-arm64@0.33.5':
     resolution: {integrity: sha512-UT4p+iz/2H4twwAoLCqfA9UH5pI6DggwKEGuaPy7nCVQ8ZsiY5PIcrRvD1DzuY3qYL07NtIQcWnBSY/heikIFQ==}
@@ -2217,6 +2223,8 @@ snapshots:
   '@fontsource-variable/noto-sans-telugu@5.2.5': {}
 
   '@fontsource/commit-mono@5.2.5': {}
+
+  '@fontsource/lexend@5.2.7': {}
 
   '@img/sharp-darwin-arm64@0.33.5':
     optionalDependencies:

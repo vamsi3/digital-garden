@@ -28,7 +28,6 @@ export default defineConfig({
         baseUrl: 'https://github.com/vamsi3/digital-garden/edit/main/',
       },
       sidebar: [
-        { label: 'Home', link: '/home' },
         {
           label: 'Clean',
           autogenerate: { directory: 'clean', collapsed: false },
