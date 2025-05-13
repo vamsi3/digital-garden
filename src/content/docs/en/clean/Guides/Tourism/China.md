@@ -2,6 +2,14 @@
 title: China
 ---
 
+#### Companies
+
+##### Alipay
+
+Alipay in general has an excellent English customer service you can access via chat. They are very responsive.
+
+#### Miscellaneous
+
 ##### App Store
 
 In the order of preference; these two should mostly suffice.
@@ -39,4 +47,3 @@ For Metro, buses etc (each city has it's own card that you can create from these
 For inter-city trains
 
 - Railway 12306 (App exists; and probably also website exists?)
-

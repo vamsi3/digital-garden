@@ -1,5 +1,5 @@
 ---
-title: Kde Plasma
+title: KDE Plasma
 ---
 
 ##### Disable single-click to open file in Dolphin
