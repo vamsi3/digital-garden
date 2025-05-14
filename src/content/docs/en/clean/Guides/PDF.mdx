@@ -1,0 +1,13 @@
+---
+title: PDF
+---
+
+##### Code Snippets
+
+```sh frame="terminal" title="Remove Password from PDF"
+qpdf \
+    --decrypt \
+    --password="<input-pdf-password>" \
+    "<input-pdf-with-password>.pdf" \
+    "<output-pdf-without-password>.pdf"
+```
