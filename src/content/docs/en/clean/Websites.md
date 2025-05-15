@@ -23,3 +23,8 @@ title: Apps
 ##### Reading List
 
 - https://acgan.sh/maxent.html
+
+##### Stock Investments
+
+- https://zerodha.com/markets/stocks
+
