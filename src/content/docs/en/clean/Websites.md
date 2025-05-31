@@ -13,7 +13,14 @@ title: Apps
 ##### AI
 
 - https://claude.ai
-
+- https://bolt.new
+- https://cline.bot
+- https://cognition.ai
+- https://www.cursor.com
+- https://windsurf.com
+- https://lovable.dev
+- https://replit.com
+- https://www.deep-ml.com
 
 ##### Software Development
 

@@ -1,0 +1,69 @@
+---
+// No props needed
+---
+<div class="carbon-badge-container-on-page">
+  <div id="wcb" class="carbonbadge"> <!-- Start with the base class -->
+    <!-- The badge script will inject content here -->
+  </div>
+</div>
+
+<!-- The official Website Carbon Badge script -->
+<script is:inline src="https://unpkg.com/website-carbon-badges@1.1.3/b.min.js" defer></script>
+
+<script is:inline>
+  function updateBadgeTheme() {
+    const badgeElement = document.getElementById('wcb');
+    if (!badgeElement) {
+      // console.error('Carbon badge element #wcb not found for theme update.');
+      return;
+    }
+
+    const currentHtmlTheme = document.documentElement.getAttribute('data-theme');
+    // console.log('HTML data-theme:', currentHtmlTheme);
+
+    if (currentHtmlTheme === 'dark') {
+      badgeElement.classList.add('wcb-d');
+      // console.log('Added wcb-d class to #wcb');
+    } else {
+      badgeElement.classList.remove('wcb-d');
+      // console.log('Removed wcb-d class from #wcb');
+    }
+  }
+
+  function initializeBadgeThemeSync() {
+    updateBadgeTheme(); // Set initial theme based on <html> attribute
+
+    const observer = new MutationObserver((mutationsList) => {
+      for (const mutation of mutationsList) {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+          // console.log('HTML data-theme changed, updating badge class.');
+          updateBadgeTheme();
+        }
+      }
+    });
+    observer.observe(document.documentElement, { attributes: true });
+  }
+
+  // Ensure the script runs after #wcb is available and Starlight's theme is set.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeBadgeThemeSync);
+  } else {
+    // DOMContentLoaded has already fired
+    // A small timeout can help ensure everything is settled.
+    setTimeout(initializeBadgeThemeSync, 0);
+  }
+</script>
+
+<style>
+  .carbon-badge-container-on-page {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 2rem;
+    padding-bottom: 1rem;
+  }
+
+  .carbon-badge-container-on-page :global(#wcb) {
+    min-height: 50px;
+    min-width: 120px;
+  }
+</style>

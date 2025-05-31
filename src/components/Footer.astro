@@ -1,0 +1,23 @@
+---
+import Default from '@astrojs/starlight/components/Footer.astro';
+
+const starlightRoute = Astro.locals.starlightRoute;
+const isHomepage = starlightRoute?.isFallback === true;
+---
+
+<Default><slot /></Default>
+
+<div class="extra-footer-message">
+  Built with Starlight 🌟
+</div>
+
+<style>
+  .extra-footer-message {
+    text-align: center; /* Or any other styling you prefer */
+    padding-top: 1rem; /* Add some space above this message */
+    padding-bottom: 0.5rem;
+    font-size: var(--sl-text-sm); /* Use Starlight's CSS variables for consistency */
+    color: var(--sl-color-gray-3); /* Example color from Starlight's palette */
+  }
+  /* The WebsiteCarbonBadge component itself should handle its own styling for positioning */
+</style>

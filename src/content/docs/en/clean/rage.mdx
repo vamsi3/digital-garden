@@ -1,0 +1,19 @@
+---
+title: rage
+---
+
+##### Commands
+
+```sh frame="terminal" title="Encrypt a file using passphrase"
+rage \
+    --passphrase \
+    --output example.png.age \
+    example.png
+```
+
+```sh frame="terminal" title="Decrypt a file using passphrase"
+rage \
+    --decrypt \
+    example.png.age \
+    > example.png
+```
