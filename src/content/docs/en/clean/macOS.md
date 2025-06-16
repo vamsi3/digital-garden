@@ -2,34 +2,52 @@
 title: macOS
 ---
 
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="caution">
+Configuring your WiFi network on router to use WPA3 security has been known to cause huge network speed drops in Macbooks. Configure the network to WPA2 and check once in a while if the issue is fixed.
+</Aside>
 
 #### Settings
 
 - Turn off Continuity/AirDrop/Handoff (System Settings > General > AirDrop & Handoff)
+	- Alternatively run, `sudo ifconfig awdl0 down`
+
 - Turn off Watch Unlock (Settings > Touch ID & Password)
 - Turn off Bluetooth
 - System Settings →
-	- Wi-Fi → _Connected Wi-Fi Network_ → Details… →
-		- Low data mode → Disable
-		- Limit IP address tracking → Disable
-		- Proxies → Auto proxy discovery → Disable
-		- Hardware →
-			- Configure → Manually
-			- MTU → Custom 1500
+	- Wi-Fi → 
+		- _Connected Wi-Fi Network_ → Details… →
+			- Low data mode → Disable
+			- Limit IP address tracking → Disable
+			- TCP/IP → Configure IPv6 → Link-Local only ([Source](https://discussions.apple.com/thread/255358715?sortBy=rank))
+			- Proxies → Auto proxy discovery → Disable
+			- Hardware →
+				- Configure → Manually
+				- MTU → Custom 1500
+		- Advanced... →
+			- Change networks → Enable
+			- Turn Wi-Fi on or off → Enable
 	- Privacy & Security →
 		- App Management → Enable 'Ghostty'
 
+##### Network Locations
+
+- System Settings → Network → `... ⌄` → Locations → Edit Locations... → `+` → _Network Location Name_
+
 ##### DNS Servers
 
-_If router DNS setting is not possible_
+_If router DNS setting is not possible..._
 
 Server addresses: https://developers.cloudflare.com/1.1.1.1/setup/#1111-for-families
 
+First create a new network location `Cloudfare DNS` if it doesn't already exist and select it. These changes below will then only apply to that network location. You can then manually flip between `Automatic` and `Cloudfare DNS` to enable or disable Cloudfare DNS use by macOS.
+
 - System Settings → Wi-Fi → _Connected Wi-Fi Network_ → Details… → DNS → DNS Servers →
-	- `1.1.1.3`
-	- `1.0.0.3`
 	- `2606:4700:4700::1113`
 	- `2606:4700:4700::1003`
+	- `1.1.1.3`
+	- `1.0.0.3`
 
 ##### Procedure to find optimal MTU
 
@@ -49,6 +67,12 @@ ping -D -s 1472 www.google.com
 
 # In this case, 1472 + 28 = 1500 us the MTU setting to use
 ```
+
+##### iCloud
+
+- System Settings → iCloud →
+	- Storage → Manage... → _Click each entry_ → Delete
+	- Saved to iCloud → See All → _Disable all entries except Find My Mac_
 
 #### Applications
 
