@@ -1,0 +1,137 @@
+---
+// src/content/docs/en/clean/Project Euler/_components/GridDiagram.astro
+interface Props {
+  word: string;
+  title: string;
+  gridSize?: number;
+}
+
+const { word, title } = Astro.props;
+
+// 1. Generate the data structure first (the points on the path)
+const points = [{ x: 0, y: 0 }];
+let currentX = 0;
+let currentY = 0;
+for (const move of word) {
+  if (move === 'L') currentX++;
+  if (move === 'R') currentY++;
+  points.push({ x: currentX, y: currentY });
+}
+
+// 2. Derive rendering parameters from the data
+const lastPoint = points[points.length - 1];
+const finalGridSize = Astro.props.gridSize ?? Math.max(lastPoint.x, lastPoint.y, 2);
+const pathData = "M " + points.map(p => `${p.x} ${p.y}`).join(" L ");
+
+// 3. Define SVG viewbox with padding for a clean layout
+const padding = 0.8;
+const viewBox = [
+  -padding,
+  -padding,
+  finalGridSize + padding * 2,
+  finalGridSize + padding * 2
+].join(" ");
+---
+
+<figure class="grid-diagram">
+  {/* 
+    The entire SVG is flipped vertically with `transform: scaleY(-1)` 
+    so that the y-axis goes up, placing (0,0) at the bottom-left.
+  */}
+  <svg viewBox={viewBox} xmlns="http://www.w3.org/2000/svg" style="transform: scaleY(-1);">
+    
+    {/* Group 1: Background elements (Grid and Diagonal) */}
+    <g class="background">
+      {/* Grid Lines */}
+      <g class="grid-lines" stroke="var(--sl-color-gray-5)" stroke-width="0.03">
+        {Array.from({ length: finalGridSize + 1 }).map((_, i) => (
+          <>
+            <line x1={0} y1={i} x2={finalGridSize} y2={i} />
+            <line x1={i} y1={0} x2={i} y2={finalGridSize} />
+          </>
+        ))}
+      </g>
+      {/* Diagonal Reference Line */}
+      <line 
+        class="diagonal" 
+        x1={0} y1={0} 
+        x2={finalGridSize} y2={finalGridSize} 
+        stroke="var(--sl-color-gray-4)" 
+        stroke-width="0.05" 
+        stroke-dasharray="0.2 0.2" 
+      />
+    </g>
+
+    {/* Group 2: Annotation elements (Axes and Labels) - DRAWN BEFORE THE PATH */}
+    <g class="annotations">
+      {/* Axes Lines */}
+      <g class="axes" stroke="var(--sl-color-text-accent)" stroke-width="0.05">
+        <line x1={0} y1={0} x2={finalGridSize} y2={0} />
+        <line x1={0} y1={0} x2={0} y2={finalGridSize} />
+      </g>
+      {/* Axis Number Labels */}
+      <g class="axis-labels">
+        {Array.from({ length: finalGridSize + 1 }).map((_, i) => (
+          <>
+            {/* X-axis labels. Flipped back to be upright. */}
+            <text transform={`translate(${i}, -0.3) scale(1, -1)`}>{i}</text>
+            {/* Y-axis labels (skip 0 to avoid overlap) */}
+            {i > 0 && <text transform={`translate(-0.3, ${i}) scale(1, -1)`}>{i}</text>}
+          </>
+        ))}
+      </g>
+    </g>
+
+    {/* Group 3: Foreground elements (Path and Markers) - DRAWN LAST TO BE ON TOP */}
+    <g class="foreground">
+      {/* The Word Path */}
+      <path 
+        d={pathData} 
+        fill="none" 
+        stroke="var(--sl-color-accent)" 
+        stroke-width="0.12" 
+        stroke-linejoin="round" 
+        stroke-linecap="round" 
+      />
+      {/* Start and End Markers */}
+      <g class="markers" fill="var(--sl-color-accent)">
+        <circle cx={points[0].x} cy={points[0].y} r="0.15" />
+        <circle cx={lastPoint.x} cy={lastPoint.y} r="0.15" />
+      </g>
+    </g>
+
+  </svg>
+  <figcaption>{title}: <code>{word}</code></figcaption>
+</figure>
+
+<style>
+  .grid-diagram {
+    margin: 2.5em auto;
+    max-width: 300px;
+    width: 100%;
+  }
+  .grid-diagram svg {
+    display: block;
+    width: 100%;
+    overflow: visible;
+  }
+  .axis-labels text {
+    font-size: 0.45px;
+    font-family: var(--sl-font-sans);
+    text-anchor: middle;
+    dominant-baseline: middle;
+    fill: var(--sl-color-gray-3);
+  }
+  .grid-diagram figcaption {
+    margin-top: 1em;
+    text-align: center;
+    font-size: var(--sl-text-sm);
+    color: var(--sl-color-gray-3);
+  }
+  .grid-diagram code {
+    background-color: var(--sl-color-gray-6);
+    padding: 0.1em 0.4em;
+    border-radius: 4px;
+    font-family: var(--sl-font-mono);
+  }
+</style>

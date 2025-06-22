@@ -1,0 +1,91 @@
+---
+title: 'Problem 948: Left and Right'
+---
+
+import { Card } from '@astrojs/starlight/components';
+import GridDiagram from './_components/GridDiagram.astro';
+
+<Card icon="pencil" title="Problem 948: Left and Right">
+Left and Right play a game with a word consisting of L's and R's, alternating turns. On Left's turn, Left can remove any positive number of letters, but not all the letters, from the left side of the word. Right does the same on Right's turn except that Right removes letters from the right side. The game continues until only one letter remains: if it is an 'L' then Left wins; if it is an 'R' then Right wins.
+
+Let $F(n)$ be the number of words of length $n$ where the player moving first, whether it's Left or Right, will win the game if both play optimally.
+
+You are given $F(3)=4$ and $F(8)=181$.
+
+Find $F(60)$.
+</Card>
+
+## Solution
+
+### Strategy: Count the Opposite
+
+The most effective way to solve this problem is to count the words where the first player *loses* and subtract this number from the total number of possible words, which is $2^n$. A word is a "losing" word for the first player if their opponent has a guaranteed winning strategy.
+
+### Identifying Losing Words
+
+Through analysis of the game's optimal strategies, we find that all losing words fall into one of three distinct, non-overlapping categories. To define them, we can "score" a word's prefixes by starting at 0, adding 1 for each 'L', and subtracting 1 for each 'R'.
+
+1.  **L-Dominant Words**
+    These are words where 'L's consistently outnumber 'R's. The score is always positive for every prefix.
+
+2.  **R-Dominant Words**
+    These are words where 'R's consistently outnumber 'L's when read from right to left. They are the mirror image of L-Dominant words.
+
+3.  **Balanced L-Dominant Words**
+    These words have an equal number of 'L's and 'R's, but the 'L's lead at every step until the very end. The score is positive for every *proper* prefix and zero for the full word. This can only occur when $n$ is even.
+
+### A Visual Interpretation: Paths on a Grid
+
+To make these abstract rules concrete, we can visualize words as paths on a grid. Imagine starting at the origin (0,0). For each letter, we take one step:
+
+*   An 'L' is a step to the **right**.
+*   An 'R' is a step **up**.
+
+The main diagonal line, $y=x$, represents a perfect balance between 'L's and 'R's. The three types of losing words create distinct visual patterns in relation to this diagonal.
+
+---
+
+#### Visualizing the Losing Paths
+
+Here are the three types of losing words visualized as paths on a grid.
+
+<GridDiagram word="LLRL" title="L-Dominant Path" gridSize={4} />
+
+An L-Dominant path like `LLRL` always stays strictly **below** the diagonal.
+
+<GridDiagram word="RRL" title="R-Dominant Path" gridSize={4} />
+
+An R-Dominant path like `RRL` always stays strictly **above** the diagonal.
+
+<GridDiagram word="LLRR" title="Balanced L-Dominant Path (Dyck Path)" gridSize={4} />
+
+A Balanced L-Dominant path like `LLRR` stays below the diagonal but ends exactly **on** it.
+
+---
+
+### Counting the Paths
+
+This connection is powerful because counting these paths is a classic problem in combinatorics with well-known formulas.
+
+1.  **L-Dominant Words ($N_1$)**
+    The number of paths that stay below the diagonal is given by a central binomial coefficient.
+    $$ N_1 = \binom{n-1}{\left\lfloor \frac{n-1}{2} \right\rfloor} $$
+
+2.  **R-Dominant Words ($N_2$)**
+    By symmetry, the number of these paths is the same.
+    $$ N_2 = N_1 = \binom{n-1}{\left\lfloor \frac{n-1}{2} \right\rfloor} $$
+
+3.  **Balanced L-Dominant Words ($N_3$)**
+    The number of these **Dyck paths** for a word of length $n=2k$ is the $(k-1)$-th **Catalan number**.
+    $$ N_3 = \begin{cases} 0 & \text{if } n \text{ is odd} \\ C_{\frac{n}{2}-1} & \text{if } n \text{ is even} \end{cases} $$
+    The Catalan numbers are defined by $C_m = \frac{1}{m+1}\binom{2m}{m}$.
+
+### The Final Formula
+
+The number of winning words, $F(n)$, is the total number of words minus all three types of losing words.
+
+$$ F(n) = 2^n - (N_1 + N_2 + N_3) $$
+
+Substituting the formulas gives us the final closed-form solution:
+
+$$ F(n) = 2^n - 2 \binom{n-1}{\left\lfloor \frac{n-1}{2} \right\rfloor} - \begin{cases} 0 & \text{if } n \text{ is odd} \\ C_{\frac{n}{2}-1} & \text{if } n \text{ is even} \end{cases} $$

@@ -1,0 +1,109 @@
+---
+title: 'Problem 918: Recursive Sequence Summation'
+---
+
+import { Card } from '@astrojs/starlight/components';
+
+<Card icon="pencil" title="Problem 918: Recursive Sequence Summation">
+The sequence $a_n$ is defined by $a_1=1$, and then recursively for $n\geq1$:
+$$
+\begin{align*}
+a_{2n}  &=2a_n\\
+a_{2n+1} &=a_n-3a_{n+1}
+\end{align*}
+$$
+The first ten terms are $1, 2, -5, 4, 17, -10, -17, 8, -47, 34$.
+
+Define $\displaystyle S(N) = \sum_{n=1}^N a_n$. You are given $S(10) = -13$.
+
+Find $S(10^{12})$.
+</Card>
+
+## Solution
+
+The goal is to find the sum of the first $10^{12}$ terms of the sequence. A direct computation is impossible, so we need to find a more efficient method by analyzing the structure of the sum $S(N)$.
+
+### Part 1: Finding a Recurrence for the Sum
+
+Let's analyze the sum $S(N)$ by splitting it into sums over even and odd indices.
+
+Consider the sum up to an odd number, $S(2N+1)$. By substituting the recurrence relations, we get a telescoping sum:
+$$
+\begin{align*}
+S(2N+1) &= a_1 + \sum_{n=1}^{N} (a_{2n} + a_{2n+1}) \\
+        &= a_1 + \sum_{n=1}^{N} \big( (2a_n) + (a_n - 3a_{n+1}) \big) \\
+        &= a_1 + 3 \sum_{n=1}^{N} (a_n - a_{n+1}) \\
+        &= a_1 + 3(a_1 - a_{N+1})
+\end{align*}
+$$
+
+Since $a_1=1$, we get a simple, powerful formula:
+$$
+S(2N+1) = 1 + 3(1 - a_{N+1}) = 4 - 3a_{N+1}
+$$
+
+We can easily find the formula for an even number, $S(2N)$, from this:
+$$
+\begin{align*}
+S(2N) &= S(2N+1) - a_{2N+1} \\
+      &= (4 - 3a_{N+1}) - (a_N - 3a_{N+1}) \\
+      &= 4 - a_N
+\end{align*}
+$$
+
+We need to find $S(10^{12})$. Since $10^{12}$ is an even number, we can use the formula for $S(2N)$ with $2N = 10^{12}$, which means $N = 5 \cdot 10^{11}$.
+$$
+S(10^{12}) = 4 - a_{5 \cdot 10^{11}}
+$$
+
+The problem is now reduced to finding the value of a single term in the sequence, $a_k$, for a very large index $k = 5 \cdot 10^{11}$.
+
+### Part 2: A Matrix Method for finding $a_n$
+
+The recurrence relations for $a_n$ depend on the index being even or odd, which suggests a connection to the binary representation of the index. Let's define a state vector containing two consecutive terms:
+
+$$
+v_n = \begin{pmatrix} a_n \\ a_{n+1} \end{pmatrix}
+$$
+
+We can find a relationship between $v_k$ and $v_{\lfloor k/2 \rfloor}$.
+
+If $k=2n$ (even), then $\lfloor k/2 \rfloor = n$. The vector $v_{2n}$ is related to $v_n$:
+$$
+\begin{align*}
+v_{2n} &= \begin{pmatrix} a_{2n} \\ a_{2n+1} \end{pmatrix} \\
+       &= \begin{pmatrix} 2a_n \\ a_n - 3a_{n+1} \end{pmatrix} \\
+       &= \begin{pmatrix} 2 & 0 \\ 1 & -3 \end{pmatrix} \begin{pmatrix} a_n \\ a_{n+1} \end{pmatrix} \\
+       &= \begin{pmatrix} 2 & 0 \\ 1 & -3 \end{pmatrix} v_n
+\end{align*}
+$$
+
+If $k=2n+1$ (odd), then $\lfloor k/2 \rfloor = n$. The vector $v_{2n+1}$ is also related to $v_n$:
+$$
+\begin{align*}
+v_{2n+1} &= \begin{pmatrix} a_{2n+1} \\ a_{2n+2} \end{pmatrix} \\
+         &= \begin{pmatrix} a_n - 3a_{n+1} \\ 2a_{n+1} \end{pmatrix} \\
+         &= \begin{pmatrix} 1 & -3 \\ 0 & 2 \end{pmatrix} \begin{pmatrix} a_n \\ a_{n+1} \end{pmatrix} \\
+         &= \begin{pmatrix} 1 & -3 \\ 0 & 2 \end{pmatrix} v_n
+\end{align*}
+$$
+
+Let's define the two transition matrices:
+$$M_0 = \begin{pmatrix} 2 & 0 \\ 1 & -3 \end{pmatrix} $$ and $$ M_1 = \begin{pmatrix} 1 & -3 \\ 0 & 2 \end{pmatrix}$$
+
+We now have a single recurrence for the vector $v_k$ for $k \ge 2$:
+$$
+v_k = M_{k \pmod 2} \cdot v_{\lfloor k/2 \rfloor}
+$$
+
+This means we can find any $v_n$ by starting with $v_1$ and repeatedly applying the appropriate matrix based on the bits of $n$.
+$$
+v_1 = \begin{pmatrix} a_1 \\ a_2 \end{pmatrix} = \begin{pmatrix} 1 \\ 2 \end{pmatrix}
+$$
+
+For an index $n$ with binary representation $(b_m b_{m-1} \dots b_0)_2$, we can trace the calculation from $v_1$:
+*   The path from index 1 to index $n$ is described by the bits $b_{m-1}, \dots, b_0$.
+*   For example, to get from $v_1$ to $v_3 = v_{(11)_2}$, we apply $M_1$. To get to $v_5 = v_{(101)_2}$, we first apply $M_0$ to get $v_2$, then $M_1$ to get $v_5$.
+*   The calculation is: $$ v_n = M_{b_0} (M_{b_1} (\dots (M_{b_{m-1}} v_1)\dots)) $$
+
+This allows us to compute $v_n$ in a number of steps proportional to $\log_2(n)$, which is very efficient.

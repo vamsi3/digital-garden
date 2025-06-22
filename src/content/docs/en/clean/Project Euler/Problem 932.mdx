@@ -1,0 +1,94 @@
+---
+title: 'Problem 932: 2025'
+---
+
+import { Card } from '@astrojs/starlight/components';
+
+<Card icon="pencil" title="Problem 932: 2025">
+For the year $2025$
+$$
+2025 = (20 + 25)^2
+$$
+
+Given positive integers $a$ and $b$, the concatenation $ab$ we call a $2025$-number if $ab = (a+b)^2$.<br/>
+Other examples are $3025$ and $81$.<br/>
+Note $9801$ is not a $2025$-number because the concatenation of $98$ and $1$ is $981$.
+
+Let $T(n)$ be the sum of all $2025$-numbers with $n$ digits or less. You are given $T(4) = 5131$.
+
+Find $T(16)$.
+
+</Card>
+
+## Mathematical Solution
+
+The problem asks for the sum of all "2025-numbers" up to 16 digits. A direct search is infeasible. We need to find a mathematical structure to generate these numbers efficiently.
+
+### Part 1: From Concatenation to an Equation
+
+Let a 2025-number $N$ be formed by concatenating a positive integer $a$ and a $k$-digit positive integer $b$.
+The definition gives us two equations:
+1.  $N = a \cdot 10^k + b$ (from concatenation)
+2.  $N = (a+b)^2$ (the 2025-property)
+
+Let's introduce a variable for the sum, $s = a+b$. The number is then simply $s^2$.
+Substituting $s$ and $a=s-b$ into the first equation gives:
+
+$$
+\begin{align*}
+s^2 &= (s-b) \cdot 10^k + b \\
+s^2 &= s \cdot 10^k - b \cdot 10^k + b \\
+s^2 &= s \cdot 10^k - b(10^k - 1) \\
+b(10^k - 1) &= s \cdot 10^k - s^2 = s(10^k - s)
+\end{align*}
+$$
+
+This gives us a formula for $b$:
+$$ b = \frac{s(10^k - s)}{10^k - 1} $$
+
+We can simplify this expression to find a formula for $a$ as well:
+$$
+b = \frac{s(10^k - 1 - (s-1))}{10^k - 1} = s - \frac{s(s-1)}{10^k - 1}
+$$
+
+Since $a = s-b$, we arrive at a remarkably simple formula for $a$:
+$$ a = \frac{s(s-1)}{10^k - 1} $$
+
+So, for any given number of digits $k$ for the "right part" $b$, any 2025-number can be generated from a sum $s$ that satisfies our conditions.
+
+### Part 2: The Core Congruence
+
+The formula for $a$ reveals a deep structural property. Since $a$ must be an integer, $s(s-1)$ must be divisible by $10^k - 1$. This gives us a core congruence relation:
+
+$$ s(s-1) \equiv 0 \pmod{10^k - 1} $$
+
+The numbers $s$ and $s-1$ are always coprime (their GCD is 1). This means that for any prime power $p^e$ in the prime factorization of $M = 10^k - 1$, $p^e$ must divide *either* $s$ or $s-1$, but not both.
+
+This allows us to find all possible values of $s$ modulo $M$. If $M$ has $r$ distinct prime factors, there are $2^r$ solutions to this congruence, which can be found using the Chinese Remainder Theorem (CRT).
+
+### Part 3: The Search Algorithm
+
+We can now formulate an algorithm to find all 2025-numbers up to 16 digits.
+A pair $(s, k)$ generates a valid 2025-number $s^2$ if it satisfies all constraints:
+
+1.  **The number of digits of $s^2$ is at most 16.** This implies $s^2 < 10^{16}$, which means $s < 10^8$.
+2.  **The number of digits of $b$ is $k$.** This means $10^{k-1} \le b < 10^k$.
+3.  **$a$ and $b$ are positive integers.** This implies $s > 1$. The condition $a \ge 1$ combined with $s > 1$ ensures $b < s$.
+
+The range for $k$ is also limited. Since $a \ge 1$, we must have $s(s-1) \ge 10^k-1$, which implies $s$ is roughly $\sqrt{10^k} = 10^{k/2}$. Combining this with $s < 10^8$, we get $10^{k/2} \lesssim 10^8$, which means $k/2 \lesssim 8$, or $k \lesssim 16$. We will check $k$ from 1 to 15.
+
+The final algorithm is as follows:
+
+1.  Initialize an empty set, `found_numbers`, to store the valid $s^2$ values and avoid duplicates.
+2.  Loop through the number of digits for $b$, `k`, from 1 to 15.
+3.  For each `k`, let $M = 10^k - 1$.
+4.  Find the prime factorization of $M$.
+5.  For each prime power factor $p^e$ of $M$, we have two choices for a congruence: $s \equiv 0 \pmod{p^e}$ or $s \equiv 1 \pmod{p^e}$.
+6.  Generate all $2^r$ systems of congruences (where $r$ is the number of distinct prime factors).
+7.  For each system, use the Chinese Remainder Theorem to find the unique solution $s$ modulo $M$.
+8.  For each solution `s`:
+    1. Check if $s < 10^8$.
+    2. Calculate $a = \frac{s(s-1)}{M}$ and $b = s-a$.
+    3. Check if $b$ has exactly $k$ digits: $10^{k-1} \le b < 10^k$.
+    4. If all conditions are met, add $s^2$ to the `found_numbers` set.
+9.  After checking all `k`, the sum of the elements in `found_numbers` is the answer $T(16)$.

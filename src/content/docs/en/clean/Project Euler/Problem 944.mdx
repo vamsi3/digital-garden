@@ -1,0 +1,101 @@
+---
+title: 'Problem 944: Sum of Elevisors'
+---
+
+import { Card } from '@astrojs/starlight/components';
+
+<Card icon="pencil" title="Problem 944: Sum of Elevisors">
+Given a set $E$ of positive integers, an element $x$ of $E$ is called an *element divisor (elevisor)* of $E$ if $x$ divides **another** element of $E$.
+
+The sum of all elevisors of $E$ is denoted $\operatorname{sev}(E)$.  
+For example, $\operatorname{sev}(\{1, 2, 5, 6\}) = 1 + 2 = 3$.
+
+Let $S(n)$ be the sum of $\operatorname{sev}(E)$ for all subsets $E$ of $\{1, 2, \dots, n\}$.  
+You are given $S(10) = 4927$.
+
+Find $S(10^{14}) \bmod 1234567891$.
+</Card>
+
+## Solution
+
+Let $S(n)$ be the sum of $\operatorname{sev}(E)$ for all subsets $E$ of $\{1, 2, \dots, n\}$.
+The function $\operatorname{sev}(E)$ is the sum of all *elevisors* of $E$. An element $x \in E$ is an elevisor if $x$ divides another element $y \in E$ (where $y \neq x$).
+
+We can rewrite $S(n)$ by changing the order of summation. Instead of summing over subsets and then over elevisors in each subset, we sum over potential elevisors $x$ and count how many subsets make $x$ an elevisor:
+
+$$
+S(n) = \sum_{E \subseteq \{1, \dots, n\}} \sum_{\substack{x \in E \\ x \text{ is an elevisor of } E}} x = \sum_{x=1}^{n} x \cdot (\text{Number of subsets } E \text{ where } x \in E \text{ and } x \text{ is an elevisor of } E)
+$$
+
+Let $N(x)$ be the number of subsets $E \subseteq \{1, \dots, n\}$ such that $x \in E$ and $x$ is an elevisor of $E$.
+For $x$ to be an elevisor of $E$, two conditions must be met:
+1.  $x \in E$.
+2.  There must exist an element $y \in E$ such that $y \neq x$ and $x | y$. This means $y = kx$ for some integer $k > 1$, and $y$ must also be in $\{1, \dots, n\}$, so $kx \le n$.
+
+Let $M_x = \{2x, 3x, \dots, \lfloor n/x \rfloor x\}$ be the set of multiples of $x$ in $\{1, \dots, n\}$ that are strictly greater than $x$.
+For $x$ to be an elevisor in a set $E$, $E$ must contain $x$, and $E$ must also contain at least one element from $M_x$ (i.e., $E \cap M_x \neq \emptyset$).
+
+The number of elements in $M_x$ is $m_x = \lfloor n/x \rfloor - 1$.
+If $\lfloor n/x \rfloor = 1$ (which means $x > n/2$), then $m_x = 0$. In this case, $M_x$ is empty, so $x$ cannot be an elevisor. Thus, $N(x)=0$ for $x > n/2$.
+
+To determine $N(x)$ for a given $x \le n/2$:
+Let $U = \{1, \dots, n\}$. We can partition $U$ into three disjoint sets with respect to $x$:
+-   The element $x$ itself.
+-   The set $M_x$ (multiples of $x$ greater than $x$, up to $n$).
+-   The set $R_x = U \setminus (\{x\} \cup M_x)$ (all other elements). The size of $R_x$ is $n - 1 - m_x = n - 1 - (\lfloor n/x \rfloor - 1) = n - \lfloor n/x \rfloor$.
+
+A subset $E$ makes $x$ an elevisor if:
+1.  $x \in E$: This is 1 choice (must include $x$).
+2.  $E \cap M_x \neq \emptyset$: The number of ways to choose a non-empty subset of $M_x$ is $2^{m_x} - 1$. (If $m_x=0$, this is $2^0-1=0$ ways, correctly indicating $x$ cannot be an elevisor).
+3.  Any elements from $R_x$ can be included: The number of ways to choose a subset of $R_x$ is $2^{|R_x|}$.
+
+Combining these, the number of such subsets $E$ is:
+
+$$
+N(x) = 1 \cdot (2^{m_x} - 1) \cdot 2^{|R_x|} = \left(2^{\lfloor n/x \rfloor - 1} - 1\right) \cdot 2^{n - \lfloor n/x \rfloor}
+$$
+
+This formula also works for $x > n/2$: $\lfloor n/x \rfloor = 1 \implies m_x = 0 \implies 2^{1-1}-1 = 0$, so $N(x)=0$.
+
+The total sum $S(n)$ is:
+
+$$
+S(n) = \sum_{x=1}^{n} x \cdot N(x) = \sum_{x=1}^{n} x \cdot \left( \left(2^{\lfloor n/x \rfloor - 1} - 1\right) \cdot 2^{n - \lfloor n/x \rfloor} \right)
+$$
+
+Since terms for $x > n/2$ are zero, the sum effectively runs up to $x = \lfloor n/2 \rfloor$.
+
+For $n = 10^{14}$, a direct summation of $O(n)$ terms is too slow. We observe that the value of $N(x)$ depends on $\lfloor n/x \rfloor$. The expression $\lfloor n/x \rfloor$ takes on at most $2\sqrt{n}$ distinct values. This allows us to group terms in the sum.
+Let $y_0 = \lfloor n/x \rfloor$. The factor $C(y_0) = (2^{y_0 - 1} - 1) \cdot 2^{n - y_0}$ is constant for all $x$ that share the same value of $y_0$.
+
+The algorithm iterates through blocks of $x$ values:
+1.  Start with `current_x = 1`.
+2.  While `current_x <= n`:
+    a.  Let $y = \lfloor n / \text{current\_x} \rfloor$. (This is the common value of $\lfloor n/i \rfloor$ for this block).
+    b.  If $y=0$ (which happens if `current_x` $> n$), break. If $y=1$ (which happens if `current_x` $> n/2$), the term $(2^{y-1}-1)$ becomes $0$, so the contribution is $0$. The loop can handle this naturally.
+    c.  Determine the range of integers $[ \text{current\_x}, z ]$ for which $\lfloor n/i \rfloor = y$. The end of this range is $z = \lfloor n/y \rfloor$.
+    d.  The sum of integers in this block is $\sum_{i=\text{current\_x}}^{z} i = \frac{(z - \text{current\_x} + 1)(\text{current\_x} + z)}{2}$.
+    e.  The contribution of this block to $S(n)$ is $\left( \sum_{i=\text{current\_x}}^{z} i \right) \cdot (2^{y-1} - 1) \cdot 2^{n-y}$.
+    f.  Add this contribution to the total sum $S(n)$ (modulo $1234567891$).
+    g.  Set `current_x = z + 1` for the next block.
+
+All calculations must be performed modulo $1234567891$. This modulus is a prime number.
+-   The division by 2 in the sum of arithmetic progression requires a modular multiplicative inverse of 2. Since $1234567891$ is prime, $2^{-1} \equiv 2^{MOD-2} \pmod{MOD}$.
+-   Modular exponentiation $a^b \pmod{MOD}$ is computed efficiently using the method of exponentiation by squaring. The exponents $y-1$ and $n-y$ can be large.
+
+This "summing over distinct values of $\lfloor n/i \rfloor$" technique reduces the number of blocks to $O(\sqrt{n})$. Each block involves a few arithmetic operations, one modular inverse, and two modular exponentiations.
+
+## Analysis
+
+The problem is solved by deriving a formula for $S(n)$ and then optimizing its computation.
+The formula derived is:
+
+$$
+S(n) = \sum_{x=1}^{n} x \cdot \left( (2^{\lfloor n/x \rfloor - 1} - 1) \cdot 2^{n - \lfloor n/x \rfloor} \right)
+$$
+
+The computation uses a standard optimization for sums involving $\lfloor N/i \rfloor$ (often called the "Dirichlet hyperbola method" or "summing by blocks").
+- The loop iterates $O(\sqrt{N})$ times, once for each distinct value of $\lfloor N/x \rfloor$ (or range of $x$ values that produce it).
+- Inside each iteration:
+    - Basic arithmetic operations ($+,-,*, /$): $O(1)$.
+    - Modular inverse of 2: $O(\log MOD)$ using Fermat
