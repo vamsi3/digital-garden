@@ -8,3 +8,30 @@ You can bring up the Rust book offline using the command
 rustup doc --book
 ```
 
+# RustRover
+
+## Set Toolchain location
+
+- Settings → Rust → Toolchain location → `/Users/vamsisatti/.nix-profile/bin`
+
+## Set standard library
+
+First, you must ensure that your `rustup`-managed toolchain has the standard library source code installed. This is done by adding the `rust-src` component.
+
+```sh frame="none"
+rustup component add rust-src
+```
+
+The standard library source code is located within your toolchain's "sysroot" directory. You can find this path programmatically.
+
+```
+echo "$(rustc --print sysroot)/lib/rustlib/src/rust/library"
+```
+
+This command does two things:
+1.  `rustc --print sysroot`: This asks the Rust compiler to print the root directory of the currently active toolchain. In a Nix environment, this will be a long path starting with `/nix/store/...`.
+2.  `echo ".../lib/rustlib/src/rust/library"`: This appends the standard sub-path where the source code lives.
+
+**This is the exact path you need to give to RustRover.** Copy this entire line.
+
+- Settings → Rust → Standard library → `/Users/vamsisatti/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/src/rust`

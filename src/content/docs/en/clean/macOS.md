@@ -13,7 +13,7 @@ Configuring your WiFi network on router to use WPA3 security has been known to c
 - Turn off Continuity/AirDrop/Handoff (System Settings > General > AirDrop & Handoff)
 	- Alternatively run, `sudo ifconfig awdl0 down`
 
-- Turn off Watch Unlock (Settings > Touch ID & Password)
+- Turn off Watch Unlock (Settings → Touch ID & Password)
 - Turn off Bluetooth
 - System Settings →
 	- Wi-Fi → 
