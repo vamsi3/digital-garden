@@ -1,0 +1,63 @@
+---
+title: Cap
+---
+
+To compile cap (https://cap.so/) from source, use the following devShell
+
+```nix
+flakeModuleArgs: {
+  config.perSystem = perSystemArgs@{pkgs, ...}: let
+    inherit (perSystemArgs) pkgs;
+  in {
+    devShells.default = pkgs.mkShell {
+      
+      buildInputs = [
+        pkgs.apple-sdk_15
+      ];
+      
+      nativeBuildInputs = [
+        pkgs.xcbuildHook
+         
+        pkgs.nodejs_20
+        pkgs.pkg-config
+        pkgs.rustc
+        pkgs.cargo
+        pkgs.libiconv
+        pkgs.openssl
+        pkgs.ffmpeg
+        pkgs.stdenv.cc
+        pkgs.xcodebuild
+        pkgs.apple-sdk_15
+        pkgs.cmake
+        pkgs.cctools
+      ];
+    
+      # The shellHook is the most critical part. It forces the environment
+      # to use the correct SDK, overriding the broken build script.
+      shellHook = ''
+        # Set variables for libraries that use pkg-config.
+        export PKG_CONFIG_PATH="''${PKG_CONFIG_PATH:-}:${pkgs.openssl.dev}/lib/pkgconfig:${pkgs.ffmpeg}/lib/pkgconfig"
+    
+        # Add the linker path for non-framework libraries.
+        export NIX_LDFLAGS="''${NIX_LDFLAGS:-} -L${pkgs.libiconv}/lib"
+    
+        # --- Force the Environment ---
+        # This is the most important command. It overrides the SDKROOT environment
+        # variable to force all build tools (especially xcodebuild) to use the
+        # modern SDK we've included, ensuring it can find ScreenCaptureKit.h.
+        export SDKROOT="${pkgs.apple-sdk}/SDKs/MacOSX.sdk"
+      '';
+    };
+  };
+}
+```
+
+and run the following commands
+
+```sh
+pnpm install
+pnpm cap-setup
+pnpm tauri:build
+```
+
+In macOS, this creates the `.app` file at `./target/release/bundle/macos/Cap - Development.app`

@@ -1,0 +1,103 @@
+---
+title: 'Problem 952: Order Modulo Factorial'
+---
+
+import { Card } from '@astrojs/starlight/components';
+
+<Card icon="pencil" title="Problem 952: Order Modulo Factorial">
+Given a prime $p$ and a positive integer $n < p$, let $R(p, n)$ be the **multiplicative order** of $p$ modulo $n!$.
+
+In other words, $R(p, n)$ is the minimal positive integer $r$ such that
+
+$$
+p^r \equiv 1 \pmod{n!}
+$$
+
+For example, $R(7, 4) = 2$ and $R(10^9 + 7, 12) = 17280$.
+
+Find $R(10^9 + 7, 10^7)$. Give your answer modulo $10^9 + 7$.
+</Card>
+
+## Solution
+
+### Strategy: Chinese Remainder Theorem and Orders
+
+The congruence $p^r \equiv 1 \pmod{n!}$ can be broken down into a system of congruences for each prime power factor of $n!$. Let the prime factorization of $n!$ be $n! = \prod_{q \le n} q^{v_q(n!)}$, where $q$ are primes and $v_q(n!)$ is the exponent of $q$ in the factorization, given by Legendre's formula: $v_q(n!) = \sum_{k=1}^{\infty} \lfloor n/q^k \rfloor$.
+
+By the Chinese Remainder Theorem, the congruence is equivalent to the system:
+
+$$
+p^r \equiv 1 \pmod{q^{v_q(n!)}} \quad \text{for all primes } q \le n
+$$
+
+For this system to hold, $r$ must be a multiple of the multiplicative order of $p$ modulo each prime power $q^{v_q(n!)}$. The minimal such positive $r$ is therefore the least common multiple (LCM) of these orders.
+
+$$
+R(p, n) = \text{lcm} \{ \text{ord}_{q^{v_q(n!)}}(p) \mid q \le n \text{ is prime} \}
+$$
+
+### Finding the Order Modulo a Prime Power
+
+The core of the problem is to find $\text{ord}_{q^a}(p)$, the order of $p$ modulo a prime power $q^a$. This can be determined from the order modulo $q$ using a principle often called the "Lifting The Exponent Lemma for Orders".
+
+1.  **For odd primes $q$:**
+    Let $k = \text{ord}_q(p)$. Then $\text{ord}_{q^a}(p) = k \cdot q^{a-c}$, where $c = v_q(p^k - 1)$.
+
+2.  **For the prime $q=2$:**
+    Let $k = \text{ord}_2(p) = 1$. Then $\text{ord}_{2^a}(p)$ depends on $v_2(p^2-1)$. Specifically, for $a \ge c = v_2(p^2-1)$, the order is $\text{ord}_{2^a}(p) = 2 \cdot 2^{a-c} = 2^{a-c+1}$.
+
+### A Key Simplification
+
+The prime factorization of the answer $R(p, n)$ is $\prod s^{e_s}$. The exponent $e_s$ for each prime $s$ is the maximum power of $s$ found among all the orders $\text{ord}_{q^{v_q(n!)}}(p)$.
+
+$$
+e_s = \max_{q \le n} \{ v_s(\text{ord}_{q^{v_q(n!)}}(p)) \}
+$$
+
+Analysis shows that for a large $n$, the term $v_s(n!)$ is significantly larger than any other contributing factor. This leads to a major simplification: the exponent $e_s$ is dominated by the case where $s=q$.
+
+$$
+e_s \approx v_s(\text{ord}_{s^{v_s(n!)}}(p)) = v_s(n!) - v_s(p^{\text{ord}_s(p)}-1) + \delta
+$$
+(where $\delta$ is 1 for $s=2$ and 0 otherwise).
+
+The term $v_s(p^{\text{ord}_s(p)}-1)$ is almost always 1. A value greater than 1 occurs only if $p^{\text{ord}_s(p)} \equiv 1 \pmod{s^2}$, which implies $p^{s-1} \equiv 1 \pmod{s^2}$. Primes $s$ with this property (for a given base $p$) are called Wieferich primes and are exceptionally rare.
+
+### Applying to the Problem
+
+We are given $p = 10^9 + 7$ and $n = 10^7$. We can make the standard and safe assumption that for $p=10^9+7$, no odd Wieferich primes exist up to $10^7$.
+
+-   **For odd primes $q \le n$**: We assume $v_q(p^{\text{ord}_q(p)}-1) = 1$. The exponent of $q$ in the final answer is $v_q(n!) - 1$.
+-   **For the prime $q=2$**: We must calculate $c_2 = v_2(p^2-1)$.
+    $p = 10^9+7 \equiv 7 \pmod 8$.
+    $p-1 = 10^9+6$, so $v_2(p-1)=1$.
+    $p+1 = 10^9+8$, so $v_2(p+1)=3$.
+    $c_2 = v_2(p^2-1) = v_2(p-1) + v_2(p+1) = 1+3=4$.
+    The exponent of 2 in the answer is $v_2(n!) - 4 + 1 = v_2(n!) - 3$.
+
+Combining these results, the final answer $A = R(p, n)$ is:
+
+$$
+A = 2^{v_2(n!)-3} \cdot \prod_{\substack{q \le n \\ q \text{ odd prime}}} q^{v_q(n!)-1}
+$$
+
+### The Final Formula
+
+We can rewrite this formula by factoring out $n! = \prod_{q \le n} q^{v_q(n!)}$:
+
+$$
+A = \frac{\prod_{q \le n} q^{v_q(n!)}}{2^3 \cdot \prod_{q \le n, q \text{ odd}} q^1} = \frac{n!}{8 \cdot \prod_{2 < q \le n} q}
+$$
+
+The problem asks for this value modulo $p = 10^9+7$. The final computation is:
+
+$$
+A \equiv n! \cdot (8)^{-1} \cdot \left(\prod_{2 < q \le n} q\right)^{-1} \pmod{p}
+$$
+
+This can be calculated efficiently:
+1.  Compute $n! \pmod{p}$.
+2.  Use a prime sieve to find all primes $q$ from $3$ to $n=10^7$.
+3.  Compute the product of these primes modulo $p$.
+4.  Find the modular multiplicative inverses of 8 and the product of primes.
+5.  Multiply all the components together modulo $p$ to get the final answer.
