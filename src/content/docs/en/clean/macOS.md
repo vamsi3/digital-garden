@@ -83,3 +83,36 @@ ping -D -s 1472 www.google.com
 - Nix - using [Determinate NIx Installer](https://determinate.systems/nix-installer/)
 - [Helix](https://helix-editor.com/ - Command Line Editor
 - Ghostty terminal
+
+#### Misc
+
+##### How to run Windows XP?
+
+1. Use UTM app and follow instructions at https://mac.getutm.app/gallery/windows-xp
+2. Get Windows XP `iso` at https://archive.org/details/windows-xp-all-sp-msdn-iso-files-en-de-ru-tr-x86-x64
+	- Download the following for 32-bit:
+	```
+	NOTE: Windows XP x64 Edition with Service Pack 3 (SP3) -DOES NOT OFFICIALLY EXIST! (Only SP2, SP1)
+
+	Windows XP Professional with Service Pack 3 (x86) - CD VL (English)
+	File: en_windows_xp_professional_with_service_pack_3_x86_cd_vl_x14-73974.iso
+	MD5:  5bf476e2fc445b8d06b3c2a6091fe3aa
+	SHA1: 66ac289ae27724c5ae17139227cbe78c01eefe40
+	Size: 589 MB (617 754 624 bytes)
+	Date: 14.04.2008 16:00
+	TAG: windows xp sp3 pro 32 bit untouched msdn volume lisence
+	KEY: V2C47-MK7JD-3R89F-D2KxW-VPK3J 
+	```
+	- Download the following for 64 bit
+	```
+	Windows XP SP2  32bit (x86) - Windows XP SP2  64bit (x64)
+	Windows XP Professional x64 Edition with SP2 - VL (English)
+	File: en_win_xp_pro_x64_with_sp2_vl_x13-41611.iso
+	MD5:  33a35e7544201ea47fee6cac6a52153b
+	SHA1: cd9479e1dbad7f26b8bdcf97e4aa71cbb8de932b
+	Size: 599 MB (628 168 704 bytes)
+	Date: 18.02.2007 16:00
+	TAG: original windows xp sp2 pro 64 bit untouched msdn volume lisence
+	KEY: VCFQD-V9FX9-46WVH-K3CD4-4J3JM
+	```
+3. Run the VM in UTM.

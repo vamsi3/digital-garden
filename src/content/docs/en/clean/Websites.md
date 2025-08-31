@@ -1,6 +1,8 @@
 ---
-title: Apps
+title: Websites
 ---
+
+##### Apps
 
 - Aves: http://github.com/deckerst/aves
 - Barcode Scanner: https://gitlab.com/Atharok/BarcodeScanner
@@ -35,3 +37,6 @@ title: Apps
 
 - https://zerodha.com/markets/stocks
 
+##### Others
+
+- https://www.zuny.info/en
