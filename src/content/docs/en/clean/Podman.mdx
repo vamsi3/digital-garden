@@ -1,0 +1,178 @@
+---
+title: 'Podman: The Modern Container Workflow'
+description: A fast-paced, reference-friendly guide to Podman for 2025 and beyond, covering installation, building, running, and core commands.
+---
+
+import { Card, CardGrid, Tabs, TabItem, Aside, Code, Terminal } from '@astrojs/starlight/components';
+
+In modern software development, containers are the air we breathe. For years, this meant a monolithic, system-wide daemon. But the landscape has evolved towards a lighter, more secure, and more flexible future. That future is daemonless, and its name is Podman.
+
+Podman offers a fully OCI-compliant container engine with a familiar CLI, but without the central daemon. It runs containers as direct child processes of your user session, making rootless operation the default, not the exception. This guide is your express lane to getting productive with it.
+
+## Setup: Integrating Podman
+
+Installation is the only part that differs significantly by OS. On Linux, Podman is a native citizen. On macOS and Windows, it uses a lightweight VM, seamlessly managed by the `podman machine` command.
+
+<Tabs>
+  <TabItem label="NixOS (Declarative)">
+    On NixOS, you integrate Podman declaratively into your system configuration. Add it to the `virtualisation.podman` options in your `/etc/nixos/configuration.nix`:
+
+    <Code lang="nix" title="/etc/nixos/configuration.nix">
+      { ... }:
+
+      {
+        virtualisation.podman = {
+          enable = true;
+          # Enable Docker-compatible socket for other tools
+          dockerCompat = true;
+          # You can also pre-load images here if desired
+          # initialImages = [ "nginx:alpine" ];
+        };
+      }
+    </Code>
+
+    Then, rebuild your system to apply the changes:
+    <Terminal>
+      sudo nixos-rebuild switch
+    </Terminal>
+  </TabItem>
+  <TabItem label="macOS / Windows">
+    Podman runs its containers inside a minimal Linux VM. The `podman machine` command set is your bridge to this environment.
+
+    1.  **Initialize the VM:** This one-time command downloads and configures the VM.
+        <Terminal>
+          podman machine init
+        </Terminal>
+
+    2.  **Start the VM:** Run this to start the background service for your session.
+        <Terminal>
+          podman machine start
+        </Terminal>
+  </TabItem>
+  <TabItem label="Other Linux (Imperative)">
+    Use your distribution's package manager.
+    <Terminal>
+      # Fedora, RHEL, etc.
+      sudo dnf install podman
+
+      # Debian, Ubuntu, etc.
+      sudo apt-get install podman
+    </Terminal>
+  </TabItem>
+</Tabs>
+
+Once installed, verify your setup. The exact version isn't important; what matters is that the command works.
+
+<Terminal>
+  podman --version
+  podman version x.y.z
+</Terminal>
+
+## The Build-Run-Manage Workflow
+
+The core Podman workflow is a simple, powerful loop. You'll build an image from a `Containerfile`, run it as a container, and then manage its lifecycle.
+
+### 1. Build an Image
+
+Images are the blueprints for containers. We'll define a simple Nginx server using a `Containerfile`.
+
+<Code lang="dockerfile" title="Containerfile">
+  # Use a minimal, secure base image
+  FROM nginx:alpine
+
+  # Create a custom index page
+  RUN echo '<h1>Hello from a Daemonless World!</h1>' > /usr/share/nginx/html/index.html
+
+  # Expose the standard HTTP port
+  EXPOSE 80
+</Code>
+
+Use `podman build` to create an image from this file. The `-t` flag tags it with a human-readable name.
+
+<Terminal>
+  # podman build -t <name>:<tag> <context_directory>
+  podman build -t my-webapp:1.0 .
+</Terminal>
+
+List your local images to see the result.
+
+<Terminal>
+  podman images
+</Terminal>
+```
+REPOSITORY          TAG     IMAGE ID      CREATED             SIZE
+localhost/my-webapp   1.0     a1b2c3d4e5f6  A few seconds ago   42.1 MB
+docker.io/library/nginx   alpine  c9a3909b6a4a  About a month ago   41.9 MB
+```
+
+### 2. Run a Container
+
+Launch a container from your image with `podman run`. We'll use a few standard flags:
+
+*   `-d`: **Detached**. Run in the background.
+*   `-p`: **Publish**. Map a host port to a container port (`host:container`).
+*   `--name`: **Name**. Give your container a memorable name.
+
+<Terminal>
+  podman run -d -p 8080:80 --name web-server my-webapp:1.0
+</Terminal>
+
+Check that your container is running with `podman ps`.
+
+<Terminal>
+  podman ps
+</Terminal>
+```
+CONTAINER ID  IMAGE                       COMMAND               CREATED        STATUS        PORTS                 NAMES
+c4a8b7e3f2d1  localhost/my-webapp:1.0   nginx -g 'daemon…'  A moment ago   Up 1 second   0.0.0.0:8080->80/tcp  web-server
+```
+
+Test it by visiting `http://localhost:8080` in your browser or using `curl`.
+
+<Terminal>
+  curl http://localhost:8080
+  <h1>Hello from a Daemonless World!</h1>
+</Terminal>
+
+## Core Command Reference
+
+This is your quick-reference cheat sheet for daily container management.
+
+<CardGrid>
+  <Card title="podman ps -a" icon="list-ordered">
+    List all containers, including stopped ones. The `-a` is crucial for cleanup.
+  </Card>
+  <Card title="podman logs <name>" icon="file-text">
+    View the log output of a container. Use `-f` to follow the log stream live.
+  </Card>
+  <Card title="podman stop <name>" icon="square">
+    Gracefully stop a running container.
+  </Card>
+  <Card title="podman rm <name>" icon="trash">
+    Remove a stopped container. Add `-f` to force-remove a running one.
+  </Card>
+  <Card title="podman rmi <image>" icon="package">
+    Remove an image from local storage.
+  </Card>
+  <Card title="podman exec -it <name> sh" icon="terminal">
+    Execute a command inside a running container. `-it` provides an interactive shell.
+  </Card>
+</CardGrid>
+
+### Cleanup Example
+
+To stop and remove the container we created:
+
+<Terminal>
+  # 1. Stop the container
+  podman stop web-server
+
+  # 2. Remove the container
+  podman rm web-server
+</Terminal>
+
+## Beyond the Basics: Pods
+
+You've now mastered the fundamentals. The true power of Podman shines when you explore **Pods**—groups of containers that share the same network namespace and resources, directly mirroring the Kubernetes Pod concept. This makes Podman an unparalleled tool for building and testing complex, multi-container applications locally before deploying them to a Kubernetes cluster.
+
+The daemon is dead. Long live the container.
